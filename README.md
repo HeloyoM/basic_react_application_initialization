@@ -31,11 +31,8 @@ Usage:
 2.  **Run the script:** Execute the script using Node.js: `node generate-react-app.js <app-name> <database-type>`.
     * `<app-name>`: The name of the new React application.
     * `<database-type>`: Either "mysql" or "mongodb" (optional, defaults to none).
-3.  **Navigate to the app:** Change your directory to the newly created application folder: `cd <app-name>`.
-4.  **Install server dependencies:** if you selected a database, navigate to the server folder and install dependencies : `cd server` then `npm install`.
-5.  **Start development:** Run `npm start` to start the React development server.
 
 Example:
 
 ```bash
-node generate-react-app.js my-awesome-app mongodb
+node generate-react-app.js
