@@ -14,7 +14,7 @@ node generate-react-app.js
 project name: <app-name>
 ```
 
-Project: React Application Generator Script
+React Application Generator Script
 
 Description:
 This script (generate-react-app.js) streamlines the creation of a new React application with TypeScript, pre-configured with essential features and libraries. It automates directory setup, component modification, hook creation, server scaffolding, and library installation, significantly reducing boilerplate code and setup time.
