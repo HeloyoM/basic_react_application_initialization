@@ -1,5 +1,18 @@
 README.txt
 
+Usage:
+
+1.  **Save the script:** Save the JavaScript code as `generate-react-app.js`.
+2.  **Run the script:** Execute the script using Node.js: `node generate-react-app.js <app-name> <database-type>`.
+    * `<app-name>`: The name of the new React application.
+    * `<database-type>`: Either "mysql" or "mongodb" (optional, defaults to none).
+
+Example:
+
+```bash
+node generate-react-app.js
+```
+
 Project: React Application Generator Script
 
 Description:
@@ -24,15 +37,3 @@ Features:
     * `cors`: For Cross-Origin Resource Sharing.
     * `dotenv`: For managing environment variables.
     * Database drivers (e.g., `mysql2` or `mongoose`).
-
-Usage:
-
-1.  **Save the script:** Save the JavaScript code as `generate-react-app.js`.
-2.  **Run the script:** Execute the script using Node.js: `node generate-react-app.js <app-name> <database-type>`.
-    * `<app-name>`: The name of the new React application.
-    * `<database-type>`: Either "mysql" or "mongodb" (optional, defaults to none).
-
-Example:
-
-```bash
-node generate-react-app.js
