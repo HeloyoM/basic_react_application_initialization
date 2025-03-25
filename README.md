@@ -11,6 +11,7 @@ Example:
 
 ```bash
 node generate-react-app.js
+project name: <app-name>
 ```
 
 Project: React Application Generator Script
