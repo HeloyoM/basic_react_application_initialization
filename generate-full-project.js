@@ -3,6 +3,18 @@ const path = require("path");
 const readline = require("readline");
 const { exec } = require("child_process");
 
+const {appRootContent} = require('./appRootComponent');
+const {apiRequestContent} = require('./apiRequestContent');
+const {headerContent}= require('./headerContent');
+const {footerContent}= require('./footerContent');
+const {localStorageUtilsContent}= require('./localStorageUtilsContent');
+const {menuContent} = require('./menuContent');
+const {useMobileHookContent} = require('./useMobileHookContent');
+const {colorsContent} = require('./colorsContent');
+const {homeContent} = require('./homeContent');
+
+
+
 const root = process.cwd();
 
 const dir_components = `components`
@@ -19,7 +31,7 @@ async function create_react_app_TS_template(projectName) {
   try {
     return new Promise(async(resolve, reject)=>{
       
-      // await createReactApp(projectName);
+      await createReactApp(projectName);
   
       await installNPM(projectName);
       
@@ -267,7 +279,6 @@ const setup_directories = async(projectName) => {
     await fs.promises.mkdir(componentsDirPath, { recursive: true });
     console.log(`📁 /${dir_components} directory created.`);
 
-
     const utilsDirPath = path.join(`${root}/${projectName}/src`, dir_utils);
 
     //Create Utils directory
@@ -299,220 +310,44 @@ const setup_frontend_app_tsx_file = (projectName)  => {
   const api = path.join(`${root}/${projectName}/src`, dir_api);
  
   return new Promise(async(resolve, reject)=>{
-
-    const appContent = `import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Typography } from '@mui/material';
-import Home from './pages/Home';
-import Header from './components/Header';
-import './App.css';
-
-const App: React.FC = () => {
-  return (
-        <Router>
-          <Header />
-
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-
-        </Router>
-  );
-};
-
-export default App;
-
-const NotFound: React.FC = () => {
-  return (
-    <Typography variant="h3" align="center" gutterBottom>
-      Not found
-    </Typography>
-  )
-}`
+    console.log({appRootContent})
     //Modify App.tsx
     const appPath = path.join(projectPath, "App.tsx");
-    await fs.promises.writeFile(appPath, appContent);
+    await fs.promises.writeFile(appPath, appRootContent);
     console.log("📄 app/index.tsx created.");
-
-    const HomeComponentContent = `import React from 'react';
-import '../App.css';
-import Footer from '../components/Footer';
-import { Box, Typography } from '@mui/material';
-
-const Home: React.FC = () => {
-  return (
-    <React.Fragment>
-      <Box>
-          <Typography sx={{ color: "#244545", fontSize: '22px', textAlign: 'center', fontWeight: 'bold' }}></Typography>
-      </Box>
-
-      <Footer />
-    </React.Fragment>
-  )
-}
-
-export default Home;`
 
     const homeComponentPath = path.join(`${pages}`, "Home.tsx");
     //Create Home.tsx component
-    await fs.promises.writeFile(homeComponentPath, HomeComponentContent);
+    await fs.promises.writeFile(homeComponentPath, homeContent);
     console.log("📄 Home.tsx created.");
-
-
-    const FooterContent = `import { Box, Typography } from "@mui/material";
-import Grid2 from '@mui/material/Grid2';
-import { MOBILE_WIDTH, useMobile } from "../utils/useMobile";
-
-const Footer = () => {
-    const windowWidth = useMobile();
-
-    // const isMobile = MOBILE_WIDTH >= windowWidth;
-
-    return (
-        <Box
-            component="footer"
-            sx={{
-                height: 600,
-                color: 'black',
-                p: 3,
-                mt: 'auto'
-            }}
-        >
-            <Grid2 container spacing={2}>
-                <Grid2 size={12}>
-                    <Typography variant="body2" align="center" sx={{ margin: '8 !important' }}>
-                        image
-                    </Typography>
-                </Grid2>
-                <Grid2 size={12}>
-                    <Typography variant="body2" align="center" sx={{ mt: 2 }}>
-                        © {new Date().getFullYear()} | All Rights Reserved Meir Juli | mybs2323@gmail.com | 0587769313
-                    </Typography>
-                </Grid2>
-            </Grid2>
-        </Box>
-    )
-}
-
-export default Footer;`
 
     const footerComponentPath = path.join(`${components}`, "Footer.tsx");
     //Create Footer.tsx component
-    await fs.promises.writeFile(footerComponentPath, FooterContent);
+    await fs.promises.writeFile(footerComponentPath, footerContent);
     console.log("📄 Footer.tsx created.");
-
-    const HeaderContent = `import React, { useMemo } from 'react';
-import { Button, Typography } from "@mui/material";
-import '../App.css';
-import Menu from './Menu';
-import MenuIcon from '@mui/icons-material/Menu';
-
-const Header = () => {
-    const [openMenu, setOpenMenu] = React.useState(false)
-
-    const openMenuModal = () => { setOpenMenu(true) }
-    const closeMenuModal = () => { setOpenMenu(false) }
-
-    const optionsListItems = useMemo(() => ([
-        <Button sx={[
-            {
-                height: '100px',
-                fontSize: '30px',
-                fontFamily: "Sora, sens-serif",
-                '&:hover': {
-                    color: 'white',
-                    backgroundColor: '#244545',
-                },
-            },]}>section</Button>,
-    ]), [])
-
-    return (
-        <>
-            <Typography className={'sticky title'}>
-
-                <Typography style={{margin: 'auto auto',fontSize: '22px'}}>Website name</Typography>
-
-                {!openMenu && <MenuIcon onClick={openMenuModal} className="menu-btn" />}
-
-                <Menu menuBody={optionsListItems} close={closeMenuModal} openMenu={openMenu} />
-
-            </Typography>
-        </>
-    )
-}
-
-export default Header;`
 
     const headerComponentPath = path.join(`${components}`, "Header.tsx");
     //Create Header.tsx component
-    await fs.promises.writeFile(headerComponentPath, HeaderContent);
+    await fs.promises.writeFile(headerComponentPath, headerContent);
     console.log("📄 Header.tsx created.");
-
-
-    const MenuContent = `import { JSX } from 'react';
-import { Drawer, IconButton } from '@mui/material';
-import { styled } from '@mui/material/styles';
-import CloseIcon from '@mui/icons-material/Close';
-
-type Props = {
-    openMenu: boolean
-    close: () => void
-    menuBody: JSX.Element[]
-    variant?: 'permanent' | 'persistent' | 'temporary'
-}
-const drawerWidth = 350;
-const DrawerHeader = styled('div')(({ theme }) => ({
-    display: 'flex',
-    alignItems: 'center',
-    padding: theme.spacing(0, 1),
-    ...theme.mixins.toolbar,
-    justifyContent: 'flex-end',
-}));
-
-const Menu = (props: Props) => {
-    const { close, menuBody, openMenu, variant = 'temporary' } = props
-
-    return (
-        <Drawer
-            sx={{
-                width: drawerWidth,
-                flexShrink: 0,
-                '& .MuiDrawer-paper': {
-                    width: drawerWidth,
-                    boxSizing: 'border-box',
-                },
-            }}
-            variant={variant}
-            anchor="right"
-            open={openMenu}
-        >
-
-            <DrawerHeader>
-                <IconButton onClick={close}>
-                    <CloseIcon className="menu-btn" />
-                </IconButton>
-            </DrawerHeader>
-
-            {menuBody}
-        </Drawer>
-    )
-}
-
-export default Menu`
 
     const MenuComponentPath = path.join(`${components}`, "Menu.tsx");
     //Create Menu.tsx component
-    await fs.promises.writeFile(MenuComponentPath, MenuContent);
+    await fs.promises.writeFile(MenuComponentPath, menuContent);
     console.log("📄 Menu.tsx created.");
 
     const baseUrlContent = `export const LOCAL_DEV = 'http://localhost:3001/api';`
 
-    const BaseUrlPath = path.join(`${api}`, "base-url.ts");
+    const BaseUrlPath = path.join(api, "base-url.ts");
     //Create Menu.tsx component
     await fs.promises.writeFile(BaseUrlPath, baseUrlContent);
     console.log("📄 base-url.ts created.");
-
+    
+    const apiRequestPath = path.join(api, "api-req.js")
+    //Create api-req.ts
+    await fs.promises.writeFile(apiRequestPath, apiRequestContent);
+    console.log("📄 api-req.ts created.");
+    
     resolve()
   })
 }
@@ -521,34 +356,22 @@ const setup_frontend_utils_functions = async(projectName) =>{
   const utils = path.join(`${root}/${projectName}/src`, dir_utils);
 
   return new Promise(async(resolve, reject)=>{
-      const useMobileHookContent = `import { useEffect, useState } from 'react'
-
-export const MOBILE_WIDTH = 600
-
-const getPageWidth = () => {
-    const { innerWidth: width } = window
-    return width
-}
-
-export function useMobile() {
-    const [windowWidth, setWindowWidth] = useState(getPageWidth())
-
-    useEffect(() => {
-        function handleResize() {
-            setWindowWidth(getPageWidth())
-        }
-
-        window.addEventListener('resize', handleResize)
-        return () => window.removeEventListener('resize', handleResize)
-    }, [])
-
-    return windowWidth
-}`
-
-    const useMobileHookPath = path.join(`${utils}`, "useMobile.ts");
-    //Create Home.tsx component
+    
+    const useMobileHookPath = path.join(utils, "useMobile.ts");
+    //Create useMobileHome.ts hook
     await fs.promises.writeFile(useMobileHookPath, useMobileHookContent);
     console.log("📄 useMobile.ts created.");
+    
+    const localStoragePath = path.join(utils, "localStorage.js");
+    //Create localStorage.js utile
+    await fs.promises.writeFile(localStoragePath, localStorageUtilsContent);
+    console.log("📄 localStorage.js created.");
+
+    const colorsPath = path.join(utils, "colors.js");
+    //Create colors.js utile
+    await fs.promises.writeFile(colorsPath, colorsContent);
+    console.log("📄 colors.js created.");
+
 
     resolve()
   })
@@ -705,8 +528,6 @@ rl.question(`project name:`, async answer => {
             if(userInput === "y"){
 
             const projectPath = path.join(root, `${projectName}/src`);
-            const utilsDirPath = path.join(`${root}/${projectName}/src`, dir_utils);
-
 
               await setup_directories(projectName)
 
@@ -717,6 +538,9 @@ rl.question(`project name:`, async answer => {
               await setup_frontend_utils_functions(projectName)
 
               exec(`npm start`, {cwd: `${root}/${projectName}`}, (error, stdout, stderr) => {
+                
+                console.log('react app is running on port 3000...')
+
                 if (error) {
                   reject(`Error creating React project: ${stderr}, ${error}`);
                 } else {
@@ -733,8 +557,6 @@ rl.question(`project name:`, async answer => {
           })
     
         })
-    
-    
         
     
       }else{
@@ -742,11 +564,6 @@ rl.question(`project name:`, async answer => {
       }
       
     })
-
-
-
-
-      
 
 
 
