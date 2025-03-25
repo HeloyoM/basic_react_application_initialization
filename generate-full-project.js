@@ -1,13 +1,13 @@
 const fs = require("fs");
 const path = require("path");
 const readline = require("readline");
-const { exec } = require("child_process");
+const { exec, execSync  } = require("child_process");
 
 const {appRootContent} = require('./appRootComponent');
 const {apiRequestContent} = require('./apiRequestContent');
 const {headerContent}= require('./headerContent');
 const {footerContent}= require('./footerContent');
-const {localStorageUtilsContent}= require('./localStorageUtilsContent');
+const { localStorageUtilContent }= require('./localStorageUtilsContent');
 const {menuContent} = require('./menuContent');
 const {useMobileHookContent} = require('./useMobileHookContent');
 const {colorsContent} = require('./colorsContent');
@@ -364,7 +364,7 @@ const setup_frontend_utils_functions = async(projectName) =>{
     
     const localStoragePath = path.join(utils, "localStorage.js");
     //Create localStorage.js utile
-    await fs.promises.writeFile(localStoragePath, localStorageUtilsContent);
+    await fs.promises.writeFile(localStoragePath, localStorageUtilContent);
     console.log("📄 localStorage.js created.");
 
     const colorsPath = path.join(utils, "colors.js");
@@ -479,6 +479,57 @@ const css_content = `body {
   })
 }
 
+const zipFilesWindows = async(sourcePaths, destinationZip) => {
+  return new Promise(async(resolve, reject)=> {
+
+    try{
+      let zipCommand = `powershell Compress-Archive -Path `;
+      
+      sourcePaths.forEach(sourcePath => {
+          zipCommand += `"${sourcePath}",`;
+      });
+      zipCommand = zipCommand.slice(0,-1);
+      zipCommand += ` -DestinationPath "${destinationZip}"`;
+
+      execSync(zipCommand, { stdio: 'inherit' });
+      console.log(`Successfully zipped files to: ${destinationZip}`);
+
+      for (const filePath of sourcePaths) {
+        try {
+          const fullPath = path.resolve(filePath);
+         console.log({fullPath})
+          await fs.promises.rm(fullPath);
+          console.log(`Removed: ${fullPath}`);
+        } catch (err) {
+          if (err.code === 'ENOENT') {
+            console.log(`File not found: ${filePath}`);
+          } else {
+            console.error(`Error removing ${filePath}:`, err);
+          }
+        }
+      }
+
+      resolve()
+  } catch (error) {
+      console.error(`Error zipping files: ${error}`);
+  }
+  
+  })
+  
+}
+const sourceFilesWindows = [
+  path.join(root, `./appRootComponent.js`),,
+  path.join(root, './apiRequestContent.js'),
+  path.join(root, './headerContent.js'),
+  path.join(root, './footerContent.js'),
+  path.join(root, './localStorageUtilsContent.js'),
+  path.join(root, './menuContent.js'),
+  path.join(root, './useMobileHookContent.js'),
+  path.join(root, './colorsContent.js'),
+  path.join(root, './homeContent.js'),
+];
+const destinationZipWindows = 'my-archive.zip';
+
 
 rl.question(`project name:`, async answer => {
   const projectName = answer.trim().toLowerCase();
@@ -536,6 +587,10 @@ rl.question(`project name:`, async answer => {
               await insert_style_sheets(projectPath)
 
               await setup_frontend_utils_functions(projectName)
+
+              await zipFilesWindows(sourceFilesWindows, destinationZipWindows)
+
+
 
               exec(`npm start`, {cwd: `${root}/${projectName}`}, (error, stdout, stderr) => {
                 

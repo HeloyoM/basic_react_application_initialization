@@ -1,0 +1,21 @@
+export const colorsContent = `export default {
+    primary: 'rgba(222, 227, 239, 0.8)',
+    secondary: 'rgba(206, 206, 206, 0.3)',
+    blue: 'rgba(0, 113, 194, 0.1)',
+    boldBlue: 'rgba(0, 113, 194, 1)',
+    saydoBlue: '#0071C2',
+    steelBlue: 'rgb(70, 130, 180)',
+    lightgreen: 'rgba(52, 171, 83, 0.1)',
+    saydoGreen: '#34AB53',
+    alert: 'rgba(255, 70, 98, 0.1)',
+    purple: 'rgba(91, 78, 181, 0.1)',
+    boldPurple: '#BF40BF',
+    white: '#fff',
+    emeraldGreen: 'rgb(80, 200, 120)',
+    orange: 'rgba(255, 170, 51, 0.7)',
+    coffee: '#E49B0F',
+    red: 'rgb(255, 0, 0)',
+    black: '#000000',
+    grapes: 'rgb(91, 78, 181)',
+    lightgrey: 'rgb(211 211 211)'
+}`;
