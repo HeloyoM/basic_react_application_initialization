@@ -1,8 +1,9 @@
-export const headerContent = `import React, { useMemo } from 'react';
+export const headerContent = (auth) => (`import React, { useMemo } from 'react';
 import { Button, Typography } from "@mui/material";
 import '../App.css';
 import Menu from './Menu';
 import MenuIcon from '@mui/icons-material/Menu';
+${auth && `import { Login as ConnectIcon } from '@mui/icons-material';`}
 
 const Header = () => {
     const [openMenu, setOpenMenu] = React.useState(false);
@@ -26,6 +27,8 @@ const Header = () => {
     return (
             <Typography className={'sticky title'}>
 
+                ${auth && <ConnectIcon />}
+
                     <Typography
                         style={{
                             margin: 'auto auto',
@@ -41,4 +44,4 @@ const Header = () => {
     )
 }
 
-export default Header;`
+export default Header;`)

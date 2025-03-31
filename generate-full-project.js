@@ -3,7 +3,7 @@ const path = require("path");
 const readline = require("readline");
 const { exec, execSync  } = require("child_process");
 
-const {appRootContent} = require('./appRootComponent');
+const {appRootContent} = require('./appRootContent');
 const {apiRequestContent} = require('./apiRequestContent');
 const {headerContent}= require('./headerContent');
 const {footerContent}= require('./footerContent');
@@ -12,7 +12,12 @@ const {menuContent} = require('./menuContent');
 const {useMobileHookContent} = require('./useMobileHookContent');
 const {colorsContent} = require('./colorsContent');
 const {homeContent} = require('./homeContent');
-
+const { userContextContent } = require("./userContextContent");
+const { serverMsgContent } = require("./serverMsgContextContent");
+const { serverMsgEnumContent } = require("./serverMsg.enum");
+const {authApiContent} = require('./authApiContent');
+const { loginDtoContent } = require("./loginDtoContent");
+const { screenWrapperContent } = require("./screenWrapperContent");
 
 
 const root = process.cwd();
@@ -21,6 +26,9 @@ const dir_components = `components`
 const dir_utils = `utils`
 const dir_pages = `pages`
 const dir_api = `api`
+const dir_dto = `dto`
+const dir_context = `context`
+const dir_enum = `enum`
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -270,51 +278,81 @@ app.listen(port, () => {
 }
 
 
-const setup_directories = async(projectName) => {
+const setup_directories = async(projectName, auth) => {
   return new Promise(async(resolve, reject) =>{
-
-    const componentsDirPath = path.join(`${root}/${projectName}/src`, dir_components);
+    const src_path = `${root}/${projectName}/src`;
+    const componentsDirPath = path.join(src_path, dir_components);
 
     //Create components directory
     await fs.promises.mkdir(componentsDirPath, { recursive: true });
     console.log(`📁 /${dir_components} directory created.`);
 
-    const utilsDirPath = path.join(`${root}/${projectName}/src`, dir_utils);
+    const utilsDirPath = path.join(src_path, dir_utils);
 
     //Create Utils directory
     await fs.promises.mkdir(utilsDirPath, { recursive: true });
     console.log(`📁 /${dir_utils} directory created.`);
 
-    const pagesDirPath = path.join(`${root}/${projectName}/src`, dir_pages);
+    const pagesDirPath = path.join(src_path, dir_pages);
     
     //Create Pages directory
     await fs.promises.mkdir(pagesDirPath, { recursive: true });
     console.log(`📁 /${dir_pages} directory created.`);
     
-    const apiDirPath = path.join(`${root}/${projectName}/src`, dir_api);
-
+    const apiDirPath = path.join(src_path, dir_api);
+    
     //Create api folder
     await fs.promises.mkdir(apiDirPath, { recursive: true });
     console.log(`📁 /${dir_api} directory created.`);
-  
+
+    const dtoDirPath = path.join(`${src_path}/api`, dir_dto);
+    
+    //Create api/dto folder
+    await fs.promises.mkdir(dtoDirPath, { recursive: true });
+    console.log(`📁 /${dir_dto} directory created.`);
+    
+    const enumDirPath = path.join(src_path, dir_enum);
+    //Create enum folder
+    await fs.promises.mkdir(enumDirPath, { recursive: true });
+    console.log(`📁 /${dir_enum} directory created.`);
+      
+    if(auth){
+      const rootDirPath = path.join(src_path, dir_context);
+      //Create context folder
+      await fs.promises.mkdir(rootDirPath, { recursive: true });
+      console.log(`📁 /${dir_context} directory created.`);
+    }
 
     resolve()
   })
 }
 
-const setup_frontend_app_tsx_file = (projectName)  => {
- 
+const setup_frontend_files = (projectName, auth)  => {
+  const src_path = `${root}/${projectName}/src`;
+
   const projectPath = path.join(root, `${projectName}/src`);
-  const components = path.join(`${root}/${projectName}/src`, dir_components);
-  const pages = path.join(`${root}/${projectName}/src`, dir_pages);
-  const api = path.join(`${root}/${projectName}/src`, dir_api);
+  const components = path.join(src_path, dir_components);
+  const pages = path.join(src_path, dir_pages);
+  const api = path.join(src_path, dir_api);
+  const dto = path.join(`${src_path}/${dir_api}`, dir_dto);
+  const context = path.join(src_path, dir_context);
  
   return new Promise(async(resolve, reject)=>{
-    console.log({appRootContent})
+   
     //Modify App.tsx
     const appPath = path.join(projectPath, "App.tsx");
-    await fs.promises.writeFile(appPath, appRootContent);
-    console.log("📄 app/index.tsx created.");
+    await fs.promises.writeFile(appPath, appRootContent(auth));
+    console.log("📄 App.tsx created.");
+    
+    if(auth){
+      const authPath = path.join(api, "auth.ts");
+      await fs.promises.writeFile(authPath, authApiContent);
+      console.log("📄 api/auth.ts created.");
+
+      const loginDtoPath = path.join(dto, "Login.dto.ts");
+      await fs.promises.writeFile(loginDtoPath, loginDtoContent);
+      console.log("📄 api/dto/Login.dto.ts created.");
+    }
 
     const homeComponentPath = path.join(`${pages}`, "Home.tsx");
     //Create Home.tsx component
@@ -326,28 +364,50 @@ const setup_frontend_app_tsx_file = (projectName)  => {
     await fs.promises.writeFile(footerComponentPath, footerContent);
     console.log("📄 Footer.tsx created.");
 
-    const headerComponentPath = path.join(`${components}`, "Header.tsx");
+    const headerComponentPath = path.join(components, "Header.tsx");
     //Create Header.tsx component
-    await fs.promises.writeFile(headerComponentPath, headerContent);
+    await fs.promises.writeFile(headerComponentPath, headerContent(auth));
     console.log("📄 Header.tsx created.");
 
-    const MenuComponentPath = path.join(`${components}`, "Menu.tsx");
+    const MenuComponentPath = path.join(components, "Menu.tsx");
     //Create Menu.tsx component
     await fs.promises.writeFile(MenuComponentPath, menuContent);
     console.log("📄 Menu.tsx created.");
 
-    const baseUrlContent = `export const LOCAL_DEV = 'http://localhost:3001/api';`
+    const baseUrlContent = `export default 'http://localhost:3001/api';`
 
     const BaseUrlPath = path.join(api, "base-url.ts");
     //Create Menu.tsx component
     await fs.promises.writeFile(BaseUrlPath, baseUrlContent);
     console.log("📄 base-url.ts created.");
     
-    const apiRequestPath = path.join(api, "api-req.js")
+    const apiRequestPath = path.join(api, "api-req.ts")
     //Create api-req.ts
     await fs.promises.writeFile(apiRequestPath, apiRequestContent);
     console.log("📄 api-req.ts created.");
     
+    const serverMsgPath = path.join(context, "AppServerMsg.ts")
+    //Create AppUserContext.tsx
+    await fs.promises.writeFile(serverMsgPath, serverMsgContent);
+    console.log("📄 AppUserContext.tsx created.");
+    
+    const serverMsgEnumPath = path.join(context, "Toast.enum.ts")
+    //Create Toast.enum.ts
+    await fs.promises.writeFile(serverMsgEnumPath, serverMsgEnumContent);
+    console.log("📄 AppUserContext.tsx created.");
+   
+    const screenSrapperPath = path.join(components, "ScreenWrapper.tsx")
+    //Create ScreenWrapper.tsx
+    await fs.promises.writeFile(screenSrapperPath, screenWrapperContent);
+    console.log("📄 ScreenWrapper.tsx created.");
+    
+    if(auth){
+      const userContextPath = path.join(context, "AppUserContext.tsx")
+      //Create userContext.tsx
+      await fs.promises.writeFile(userContextPath, userContextContent);
+      console.log("📄 userContext.tsx created.");
+    }
+
     resolve()
   })
 }
@@ -518,7 +578,7 @@ const zipFilesWindows = async(sourcePaths, destinationZip) => {
   
 }
 const sourceFilesWindows = [
-  path.join(root, `./appRootComponent.js`),,
+  path.join(root, `./appRootComponent.js`),
   path.join(root, './apiRequestContent.js'),
   path.join(root, './headerContent.js'),
   path.join(root, './footerContent.js'),
@@ -527,9 +587,16 @@ const sourceFilesWindows = [
   path.join(root, './useMobileHookContent.js'),
   path.join(root, './colorsContent.js'),
   path.join(root, './homeContent.js'),
+  
+  path.join(root, './authApiContent.js'),
+  path.join(root, './loginDtoContent.js'),
+  path.join(root, './screenWrapperContent.js'),
+  path.join(root, './serverMsg.enum.js'),
+  path.join(root, './serverMsgContextContent.js'),
+  path.join(root, './userContextContent.js'),
 ];
-const destinationZipWindows = 'my-archive.zip';
 
+const destinationZipWindows = 'helpers-files.zip';
 
 rl.question(`project name:`, async answer => {
   const projectName = answer.trim().toLowerCase();
@@ -571,25 +638,25 @@ rl.question(`project name:`, async answer => {
 
 
 
-              rl.question(`Continue with prontend side?: (Y/n)`, 
-              async(answer) =>{
+            rl.question(`Continue with prontend side?: (Y/n)`, 
             
-              const userInput = answer.trim().toLowerCase(); 
+            async(answer) =>{
+            
+            const userInput = answer.trim().toLowerCase(); 
 
             if(userInput === "y"){
 
             const projectPath = path.join(root, `${projectName}/src`);
 
-              await setup_directories(projectName)
+              await setup_directories(projectName, userAuth)
 
-              await setup_frontend_app_tsx_file(projectName)
+              await setup_frontend_files(projectName, userAuth)
 
               await insert_style_sheets(projectPath)
 
               await setup_frontend_utils_functions(projectName)
 
               await zipFilesWindows(sourceFilesWindows, destinationZipWindows)
-
 
 
               exec(`npm start`, {cwd: `${root}/${projectName}`}, (error, stdout, stderr) => {

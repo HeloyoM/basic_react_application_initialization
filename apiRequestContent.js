@@ -1,39 +1,39 @@
-export const apiRequestContent = `import axios, { CancelTokenSource } from 'axios'
+export const apiRequestContent = `import axios from 'axios'
 import baseUrl from './base-url'
-import { getItem } from 'utils/localStorage'
+import { getItem } from '../utils/localStorage'
 
 export const POST = async <T>(url: string, body: unknown) => {
 	const config = getRequestConfiguration()
 	return await (
-		await axios.post<T>({url}, body, config)
+		await axios.post<T>(url, body, config)
 	).data
 }
 
 export const PUT = async <T>(url: string, body?: unknown) => {
 	const config = getRequestConfiguration()
 	return await (
-		await axios.put<T>({url}, body, config)
+		await axios.put<T>(url, body, config)
 	).data
 }
 
 export const GET = async <T>(url: string) => {
 	const config = getRequestConfiguration()
 	return await (
-		await axios.get<T>({url}, config)
+		await axios.get<T>(url, config)
 	).data
 }
 
 export const PATCH = async <T>(url: string, body?: unknown) => {
 	const config = getRequestConfiguration()
 	return await (
-		await axios.patch<T>({url}, body, config)
+		await axios.patch<T>(url, body, config)
 	).data
 }
 
 export const DELETE = async <T>(url: string) => {
 	const config = getRequestConfiguration()
 	return await (
-		await axios.delete<T>({url}, config)
+		await axios.delete<T>(url, config)
 	).data
 }
 
